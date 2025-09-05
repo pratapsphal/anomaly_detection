@@ -7,6 +7,9 @@ WORKDIR /app
 # Set the Spring profile to be active in the container
 ENV SPRING_PROFILES_ACTIVE=gcp
 
+# JAR file Detail 
+- name: List JAR files
+  run: ls -lh target
 # Copy the executable JAR file from the Maven build into the container
 # This assumes your JAR file name is similar to 'dataIngestionService-*.jar'
 COPY target/anomaly_detection-*.jar /app/app.jar
