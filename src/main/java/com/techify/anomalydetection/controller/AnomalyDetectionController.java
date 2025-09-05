@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AnomalyDetectionController {
     @GetMapping("/hello")
     public String hello() {
-        return "Welcome AnomalyDetection Service.";
+        return "Welcome, AnomalyDetection Service.";
     }
 }
