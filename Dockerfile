@@ -9,7 +9,8 @@ ENV SPRING_PROFILES_ACTIVE=gcp
 
 # Copy the executable JAR file from the Maven build into the container
 # This assumes your JAR file name is similar to 'dataIngestionService-*.jar'
-COPY target/dataIngestionService-*.jar /app/app.jar
+COPY target/anomaly_detection-0.0.1-SNAPSHOT.jar /app/app.jar
+
 
 # Define the port on which the application will run
 # Make sure this matches the port your Spring Boot app listens on (e.g., in application.properties)
