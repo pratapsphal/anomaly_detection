@@ -4,7 +4,7 @@ FROM openjdk:17-jdk-slim
 # Set the working directory inside the container
 WORKDIR /app
 
-# Set the Spring profile to be active in the container.
+# Set the Spring profile to be active in the container
 ENV SPRING_PROFILES_ACTIVE=gcp
 
 # Copy the executable JAR file from the Maven build into the container
