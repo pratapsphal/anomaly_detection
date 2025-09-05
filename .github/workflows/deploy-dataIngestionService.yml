@@ -26,10 +26,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          
+
+      # The working-directory has been removed. Maven will now run from the root of your project.
       - name: Build with Maven
         run: mvn clean package -DskipTests
-        working-directory: ./dataIngestionService
 
       - name: 'Authenticate to Google Cloud and Set Up CLI'
         uses: 'google-github-actions/auth@v1'
@@ -40,17 +40,17 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
 
+      # The working-directory has been removed here as well.
       - name: Build Docker image
         run: |
           docker build -t us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
                        -t us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest .
-        working-directory: ./dataIngestionService
 
+      # And finally, the working-directory has been removed from the push step.
       - name: Push Docker image
         run: |
           docker push us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
           docker push us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest
-        working-directory: ./dataIngestionService
 
       - name: Deploy to Cloud Run
         run: |
