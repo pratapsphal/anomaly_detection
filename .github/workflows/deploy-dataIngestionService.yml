@@ -34,7 +34,7 @@ jobs:
       - name: 'Authenticate to Google Cloud and Set Up CLI'
         uses: 'google-github-actions/auth@v1'
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          # The credentials_json has been removed to use Workload Identity Federation
           project_id: '${{ env.PROJECT_ID }}'
 
       - name: Configure Docker for Artifact Registry
