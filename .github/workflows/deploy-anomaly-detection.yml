@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
-      id-token: 'write'  # Required for Workload Identity Federation.
+      id-token: 'write'  # Required for Workload Identity Federation
 
     steps:
       - name: Checkout code
@@ -34,6 +34,19 @@ jobs:
 
       - name: List JAR files for verification
         run: ls -lh target
+
+      # 🔎 Debug step: check GitHub OIDC token
+      - name: Debug GitHub OIDC Token
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const core = require('@actions/core');
+            const idToken = await core.getIDToken('sts.googleapis.com');
+            console.log("OIDC Token:\n", idToken);
+
+            const parts = idToken.split('.');
+            const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+            console.log("Decoded payload:\n", JSON.stringify(payload, null, 2));
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
