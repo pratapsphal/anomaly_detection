@@ -31,7 +31,7 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean package -DskipTests
-        working-directory: ./anomaly_detection
+        working-directory: anomaly_detection
 
       - name: 'Authenticate to Google Cloud and Set up CLI'
         uses: 'google-github-actions/auth@v2'
@@ -44,13 +44,13 @@ jobs:
         run: |
           docker build -t us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
                        -t us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest .
-        working-directory: ./anomaly_detection
+        working-directory: anomaly_detection
 
       - name: Push Docker image
         run: |
           docker push us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }} && \
           docker push us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest
-        working-directory: ./anomaly_detection
+        working-directory: anomaly_detection
 
       - name: Deploy to Cloud Run
         run: |
