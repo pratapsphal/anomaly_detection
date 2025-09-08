@@ -6,7 +6,6 @@ on:
       - master
     paths:
       - 'anomaly_detection/**'
-  workflow_dispatch:
 
 env:
   PROJECT_ID: unique-spirit-469000-h2
