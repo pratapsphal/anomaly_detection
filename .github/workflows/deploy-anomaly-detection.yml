@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - master
-    paths:
-      - 'anomaly_detection/**'
+
 
 env:
   PROJECT_ID: unique-spirit-469000-h2
