@@ -1,7 +1,7 @@
 # Use a lightweight OpenJDK runtime as the base image
 FROM openjdk:17-jdk-slim
 
-# Set the working directory inside the container
+# Set the working directory inside the container.
 WORKDIR /app
 
 # Set the Spring profile to be active in the container
