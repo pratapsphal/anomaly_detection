@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
-      id-token: 'write'  # Required for Workload Identity Federation
+      id-token: 'write'  # Required for Workload Identity Federation.
 
     steps:
       - name: Checkout code
