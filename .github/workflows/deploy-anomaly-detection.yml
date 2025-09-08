@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - 'anomaly_detection/**'
   workflow_dispatch:
 
 env:
