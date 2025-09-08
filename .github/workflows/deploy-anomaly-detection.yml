@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'anomaly_detection/**'
   workflow_dispatch:
 
 env:
@@ -17,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
-      id-token: 'write'   # REQUIRED for Workload Identity Federation
+      id-token: 'write'
 
     steps:
       - name: Checkout code
@@ -31,30 +33,30 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean package -DskipTests
+        working-directory: ./anomaly_detection
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      - name: 'Authenticate to Google Cloud and Configure Docker'
+        uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: projects/940370294638/locations/global/workloadIdentityPools/github-pool-2/providers/github-provider-2
           service_account: github-actions-deployer@unique-spirit-469000-h2.iam.gserviceaccount.com
 
-      - name: Set up gcloud CLI
+      - name: Configure gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
-
-      - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
 
       - name: Build Docker image
         run: |
           docker build -t us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
                        -t us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest .
+        working-directory: ./anomaly_detection
 
       - name: Push Docker image
         run: |
-          docker push us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+          docker push us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }} && \
           docker push us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest
+        working-directory: ./anomaly_detection
 
       - name: Deploy to Cloud Run
         run: |
