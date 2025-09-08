@@ -15,5 +15,5 @@ COPY target/AnomalyDetectionService-*.jar /app/app.jar
 # Define the port on which the application will run
 EXPOSE 8080
 
-# Specify the command to run the application
+# Specify the command to run the application.
 ENTRYPOINT ["java", "-jar", "app.jar"]
