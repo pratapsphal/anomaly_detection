@@ -9,7 +9,7 @@ ENV SPRING_PROFILES_ACTIVE=gcp
 
 # Copy the executable JAR file from the Maven build into the container.
 # This must be the correct name from your Maven build output.
-COPY target/AnomalyDetectionService-*.jar /app/app.jar
+COPY target/anomaly_detection-*.jar /app/app.jar
 
 
 # Define the port on which the application will run
