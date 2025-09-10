@@ -37,18 +37,13 @@ jobs:
         id: 'auth'
         uses: google-github-actions/auth@v2
         with:
+          project_id: ${{ env.PROJECT_ID }}
           workload_identity_provider: projects/940370294638/locations/global/workloadIdentityPools/github-pool-2/providers/github-provider-2
           service_account: github-actions-deployer@unique-spirit-469000-h2.iam.gserviceaccount.com
 
-      - name: Configure gcloud and Docker
+      - name: Configure Docker for Artifact Registry
         run: |
-          # The auth action provides credentials to the runner's environment.
-          # We can now use gcloud commands directly.
-          gcloud --quiet config set project ${{ env.PROJECT_ID }}
-          
-          # Get a fresh access token and use it to log into Docker directly.
-          ACCESS_TOKEN=$(gcloud auth print-access-token)
-          echo $ACCESS_TOKEN | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev
+          echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin us-central1-docker.pkg.dev
 
       - name: Build Docker image
         run: |
