@@ -40,17 +40,12 @@ jobs:
           workload_identity_provider: projects/940370294638/locations/global/workloadIdentityPools/github-pool-2/providers/github-provider-2
           service_account: github-actions-deployer@unique-spirit-469000-h2.iam.gserviceaccount.com
 
-      - name: Set up gcloud CLI
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-          # The `auth` action provides credentials to the runner's environment,
-          # so explicitly passing a token here is not required.
-
-      - name: Configure Docker for Artifact Registry
+      - name: Set up gcloud CLI and Docker
         run: |
+          gcloud auth activate-service-account --key-file=${{ steps.auth.outputs.credentials_file_path }}
+          gcloud --quiet config set project ${{ env.PROJECT_ID }}
           gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
-
+      
       - name: Build Docker image
         run: |
           docker build -t us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
