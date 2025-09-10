@@ -33,14 +33,12 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Authenticate to Google Cloud and configure Docker
-        id: 'auth'
+      - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
           workload_identity_provider: projects/940370294638/locations/global/workloadIdentityPools/github-pool-2/providers/github-provider-2
           service_account: github-actions-deployer@unique-spirit-469000-h2.iam.gserviceaccount.com
-          token_format: access_token
 
       - name: Configure Docker for Artifact Registry
         run: |
