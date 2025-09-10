@@ -44,9 +44,8 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
-          # This configures the gcloud CLI to use the access token from the previous step
-          # and bypasses the implicit token refresh that was failing.
-          token: ${{ steps.auth.outputs.access_token }}
+          # The `auth` action provides credentials to the runner's environment,
+          # so explicitly passing a token here is not required.
 
       - name: Configure Docker for Artifact Registry
         run: |
