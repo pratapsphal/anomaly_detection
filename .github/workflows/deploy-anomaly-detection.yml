@@ -33,17 +33,13 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Authenticate to Google Cloud
-        id: 'auth'
-        uses: google-github-actions/auth@v2
+      - name: 'Authenticate to Google Cloud and Set Up CLI'
+        uses: 'google-github-actions/auth@v2'
         with:
-          project_id: ${{ env.PROJECT_ID }}
-          workload_identity_provider: projects/940370294638/locations/global/workloadIdentityPools/github-pool-2/providers/github-provider-2
-          service_account: github-actions-deployer@unique-spirit-469000-h2.iam.gserviceaccount.com
-          token_format: access_token
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      - name: Docker login to Artifact Registry
-        run: echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin ${{ env.REGION }}-docker.pkg.dev
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
 
       - name: Build Docker image
         run: |
@@ -58,7 +54,7 @@ jobs:
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest \
+            --image us-central1-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest \
             --region ${{ env.REGION }} \
             --platform managed \
             --allow-unauthenticated
