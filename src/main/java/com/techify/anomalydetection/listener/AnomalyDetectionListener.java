@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
@@ -26,8 +27,10 @@ public class AnomalyDetectionListener {
     // This method is the Pub/Sub message listener.
     // It is activated when a new message arrives on the configured channel.
     @ServiceActivator(inputChannel = "pubsubInputChannel")
-    public void receiveMessage(String payload, BasicAcknowledgeablePubsubMessage message) {
+    public void receiveMessage(BasicAcknowledgeablePubsubMessage message) {
         try {
+        	
+        	 String payload = message.getPubsubMessage().getData().toStringUtf8();
             logger.info("Received message payload: {}", payload);
 
             // Pass the received data to the AnomalyDetector service for analysis
