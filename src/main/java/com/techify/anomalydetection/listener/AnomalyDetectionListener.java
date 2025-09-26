@@ -9,7 +9,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
-import com.techify.anomalydetection.service.AnomalyDetector;
+import com.techify.anomalydetection.service.AnomalyDetectorService;
 
 // This component acts as the Pub/Sub message listener.
 @Component
@@ -17,10 +17,10 @@ public class AnomalyDetectionListener {
 
     private static final Logger logger = LoggerFactory.getLogger(AnomalyDetectionListener.class);
 
-    private final AnomalyDetector anomalyDetector;
+    private final AnomalyDetectorService anomalyDetector;
 
     @Autowired
-    public AnomalyDetectionListener(AnomalyDetector anomalyDetector) {
+    public AnomalyDetectionListener(AnomalyDetectorService anomalyDetector) {
         this.anomalyDetector = anomalyDetector;
     }
 
@@ -34,7 +34,7 @@ public class AnomalyDetectionListener {
             logger.info("Received message payload: {}", payload);
 
             // Pass the received data to the AnomalyDetector service for analysis
-            String anomalyResult = anomalyDetector.checkForAnomaly(payload);
+            String anomalyResult = anomalyDetector.checkForAnomalyAndStore(payload);
 
             logger.info("Anomaly detection result: {}", anomalyResult);
 
