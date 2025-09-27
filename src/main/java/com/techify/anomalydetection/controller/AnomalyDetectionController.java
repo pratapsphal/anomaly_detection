@@ -28,6 +28,7 @@ public class AnomalyDetectionController {
 
     @Autowired
     public AnomalyDetectionController(Firestore firestore) {
+    	 logger.info(">> Retrieved Constructure anomalies from Firestore");
         this.firestore = firestore;
         this.anomaliesCollection = firestore.collection("anomalies");
     }
@@ -38,10 +39,11 @@ public class AnomalyDetectionController {
      */
     @GetMapping("/anomalies")
     public List<AnomalyData> getAnomalies() throws ExecutionException, InterruptedException {
+    	 logger.info(">>> Retrieved anomalies from Firestore");
         ApiFuture<QuerySnapshot> future = anomaliesCollection.get();
         List<QueryDocumentSnapshot> documents = future.get().getDocuments();
         
-        logger.info("Retrieved {} anomalies from Firestore.", documents.size());
+        logger.info(">>>Retrieved {} anomalies from Firestore.", documents.size());
         
         return documents.stream()
                 .map(doc -> doc.toObject(AnomalyData.class))
