@@ -1,69 +1,73 @@
 package com.techify.anomalydetection.service;
 
-
-import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.Firestore;
-import com.techify.anomalydetection.dto.AnomalyData;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AnomalyDetectorService {
 
     private static final Logger logger = LoggerFactory.getLogger(AnomalyDetectorService.class);
-    private final ChatClient chatClient;
-    private final Firestore firestore;
-    private final CollectionReference anomaliesCollection;
 
-    @Autowired
-    public AnomalyDetectorService(ChatClient chatClient, Firestore firestore) {
-        this.chatClient = chatClient;
-        this.firestore = firestore;
-        this.anomaliesCollection = firestore.collection("anomalies");
+    // Inject Firestore service or repository here to save anomalies
+    // Example: private final FirestoreRepository firestoreRepository;
+    // Use constructor injection for FirestoreRepository
+
+    public AnomalyDetectorService() {
+        // Initialize dependencies if required
     }
 
     /**
-     * Checks for anomalies in network data using an AI model and stores the result.
-     * @param networkData The network data in JSON format.
-     * @return A string indicating if an anomaly was detected.
+     * Main processing method to detect anomalies from input data JSON string.
+     * @param inputData JSON string representing data to analyze
      */
-    public String checkForAnomalyAndStore(String networkData) {
-        String promptText = "You are an AI assistant for a telecom network. Your task is to analyze network data in JSON format for any potential anomalies, such as unusually high traffic volume or errors. Your response must be very concise. Respond with 'ANOMALY DETECTED' if an anomaly is found, or 'NORMAL' if the data appears normal. Here is the data: "
-                + networkData;
-        
-        UserMessage userMessage = new UserMessage(promptText);
-        
-        String response = chatClient.prompt()
-                .user(promptText)
-                .call()
-                .content();
-        
-        // If an anomaly is detected, store the data
-        if ("ANOMALY DETECTED".equals(response)) {
-            storeAnomaly(networkData);
-        }
-        
-        return response;
-    }
-    
-    /**
-     * Stores the anomaly data in a Firestore collection.
-     * @param payload The raw message payload from Pub/Sub.
-     */
-    private void storeAnomaly(String payload) {
+    public void processAnomalyDetection(String inputData) {
         try {
-            ApiFuture<DocumentReference> addedDocRef = anomaliesCollection.add(new AnomalyData(payload));
-            logger.info("Anomaly data stored in Firestore with ID: {}", addedDocRef.get().getId());
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("Failed to store anomaly data in Firestore", e);
+            logger.info("Starting anomaly detection for data: {}", inputData);
+            List<String> detectedAnomalies = detectAnomalies(inputData);
+
+            if (detectedAnomalies.isEmpty()) {
+                logger.info("No anomalies found in input data.");
+            } else {
+                logger.info("Detected {} anomalies: {}", detectedAnomalies.size(), detectedAnomalies);
+                saveAnomaliesToFirestore(detectedAnomalies);
+            }
+        } catch (Exception e) {
+            logger.error("Error processing anomaly detection", e);
+            throw e; // propagate exception to nack message if needed
+        }
+    }
+
+    /**
+     * Dummy method to simulate anomaly detection.
+     * Replace with actual AI/ML or rule-based detection.
+     * @param inputData String input JSON data
+     * @return List of anomalous data strings or empty list if none detected
+     */
+    public List<String> detectAnomalies(String inputData) {
+        List<String> anomalies = new ArrayList<>();
+
+        // For demo, consider trafficVolume > 1000 as anomaly (pseudo logic)
+        if (inputData.contains("\"trafficVolume\":") && inputData.contains("99999")) {
+            anomalies.add(inputData);
+        }
+
+        return anomalies;
+    }
+
+    /**
+     * Dummy method to simulate saving anomalies to Firestore database.
+     * Integrate with Firestore client API in real implementation.
+     * @param anomalies List of anomalies to save
+     */
+    public void saveAnomaliesToFirestore(List<String> anomalies) {
+        // TODO: invoke Firestore SDK or repository save methods
+        for (String anomaly : anomalies) {
+            logger.info("Saving anomaly to Firestore: {}", anomaly);
+            // firestoreRepository.save(anomaly) or firestoreClient.write(...)
         }
     }
 }
